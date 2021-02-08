@@ -1,5 +1,4 @@
 const express = require("express");
-let donuts = require("./donuts");
 
 const db = require("./db/models");
 const { Donut } = require("./db/models");
@@ -22,20 +21,37 @@ app.get("/donuts", async (req, res) => {
   }
 });
 
-app.delete("/donuts/:donutId", (req, res) => {
-  const foundDonut = donuts.find((donut) => donut.id === +req.params.donutId);
-  if (foundDonut) {
-    donuts = donuts.filter((donut) => donut !== foundDonut);
-    res.status(204).end();
-  } else {
-    res.status(404).json({ message: "Donut not found" });
+app.post("/donuts", async (req, res) => {
+  try {
+    const newDonut = await Donut.create(req.body);
+    res.status(201).json(newDonut);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
   }
 });
 
-app.post("/donuts", (req, res) => {
-  req.body.id = donuts[donuts.length - 1].id + 1;
-  donuts.push(req.body);
-  res.status(201).json(req.body);
+app.put("/donuts/:donutId", async (req, res) => {
+  try {
+    const foundDonut = await Donut.findByPk(req.params.donutId);
+    if (foundDonut) {
+      await foundDonut.update(req.body);
+      res.status(204).end();
+    } else res.status(404).json({ message: "Donut not found" });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+app.delete("/donuts/:donutId", async (req, res) => {
+  try {
+    const foundDonut = await Donut.findByPk(req.params.donutId);
+    if (foundDonut) {
+      await foundDonut.destroy();
+      res.status(204).end();
+    } else res.status(404).json({ message: "Donut not found" });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
 });
 
 db.sequelize.sync();
