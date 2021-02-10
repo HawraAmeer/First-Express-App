@@ -1,45 +1,51 @@
 const { Donut } = require("../db/models");
 
-exports.donutList = async (req, res) => {
+exports.fetchDonut = async (donutId, next) => {
+  try {
+    return await Donut.findByPk(donutId);
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.donutList = async (req, res, next) => {
   try {
     const donuts = await Donut.findAll({
       attributes: { exclude: ["createdAt", "updatedAt"] },
     });
     res.json(donuts);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    next(error);
   }
 };
 
-exports.createDonut = async (req, res) => {
+exports.createDonut = async (req, res, next) => {
   try {
     const newDonut = await Donut.create(req.body);
     res.status(201).json(newDonut);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    next(error);
   }
 };
 
-exports.updateDonut = async (req, res) => {
+exports.donutDetail = async (req, res, next) => {
+  res.json(req.donut);
+};
+
+exports.updateDonut = async (req, res, next) => {
   try {
-    const foundDonut = await Donut.findByPk(req.params.donutId);
-    if (foundDonut) {
-      await foundDonut.update(req.body);
-      res.status(204).end();
-    } else res.status(404).json({ message: "Donut not found" });
+    await req.donut.update(req.body);
+    res.status(204).end();
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    next(error);
   }
 };
 
-exports.deleteDonut = async (req, res) => {
+exports.deleteDonut = async (req, res, next) => {
   try {
-    const foundDonut = await Donut.findByPk(req.params.donutId);
-    if (foundDonut) {
-      await foundDonut.destroy();
-      res.status(204).end();
-    } else res.status(404).json({ message: "Donut not found" });
+    await req.donut.destroy();
+    res.status(204).end();
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    next(error);
   }
 };

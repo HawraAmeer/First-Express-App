@@ -14,6 +14,16 @@ app.use("/donuts", donutRoutes);
 //   res.json({ message: "Hello, welcome to your home!" });
 // });
 
+app.use((req, res, next) => {
+  next({ status: 404, message: "Path Not Found." });
+});
+
+app.use((err, req, res, next) => {
+  res
+    .status(err.status ?? 500)
+    .json({ message: err.message ?? "Internal Server Error!" });
+});
+
 db.sequelize.sync();
 
 app.listen(8000, () => {
