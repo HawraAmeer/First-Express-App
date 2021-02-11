@@ -4,9 +4,12 @@ const db = require("./db/models");
 
 const donutRoutes = require("./routes/donuts");
 
+const cors = require("cors");
+
 const app = express();
 
 app.use(express.json());
+app.use(cors());
 
 app.use("/donuts", donutRoutes);
 
