@@ -2,12 +2,13 @@ const express = require("express");
 
 const {
   donutList,
-  createDonut,
   updateDonut,
   deleteDonut,
   fetchDonut,
   donutDetail,
 } = require("../controllers/donutsController");
+
+const upload = require("../middlewares/multer");
 
 const router = express.Router();
 
@@ -21,11 +22,9 @@ router.param("donutId", async (req, res, next, donutId) => {
 
 router.get("/", donutList);
 
-router.post("/", createDonut);
-
 router.get("/:donutId", donutDetail);
 
-router.put("/:donutId", updateDonut);
+router.put("/:donutId", upload.single("image"), updateDonut);
 
 router.delete("/:donutId", deleteDonut);
 

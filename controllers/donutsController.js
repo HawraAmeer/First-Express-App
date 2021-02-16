@@ -1,4 +1,5 @@
 const { Donut } = require("../db/models");
+const { Shop } = require("../db/models");
 
 exports.fetchDonut = async (donutId, next) => {
   try {
@@ -11,18 +12,14 @@ exports.fetchDonut = async (donutId, next) => {
 exports.donutList = async (req, res, next) => {
   try {
     const donuts = await Donut.findAll({
-      attributes: { exclude: ["createdAt", "updatedAt"] },
+      attributes: { exclude: ["shopId", "createdAt", "updatedAt"] },
+      include: {
+        model: Shop,
+        as: "shop",
+        attributes: ["id"],
+      },
     });
     res.json(donuts);
-  } catch (error) {
-    next(error);
-  }
-};
-
-exports.createDonut = async (req, res, next) => {
-  try {
-    const newDonut = await Donut.create(req.body);
-    res.status(201).json(newDonut);
   } catch (error) {
     next(error);
   }
@@ -34,8 +31,11 @@ exports.donutDetail = async (req, res, next) => {
 
 exports.updateDonut = async (req, res, next) => {
   try {
-    await req.donut.update(req.body);
-    res.status(204).end();
+    if (req.file) {
+      req.body.image = `http://${req.get("host")}/media/${req.file.filename}`;
+    }
+    const updatedDonut = await req.donut.update(req.body);
+    res.status(201).json(updatedDonut);
   } catch (error) {
     next(error);
   }
