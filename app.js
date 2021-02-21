@@ -2,14 +2,23 @@ const express = require("express");
 const db = require("./db/models");
 const donutRoutes = require("./routes/donuts");
 const shopRoutes = require("./routes/shops");
+const userRoutes = require("./routes/users");
 const path = require("path");
 const cors = require("cors");
+const passport = require("passport");
+const { localStrategy } = require("./middlewares/passport");
 
 const app = express();
 
 app.use(express.json());
 app.use(cors());
+
+app.use(passport.initialize());
+passport.use(localStrategy);
+
 app.use("/media", express.static(path.join(__dirname, "media")));
+
+app.use(userRoutes);
 app.use("/donuts", donutRoutes);
 app.use("/shops", shopRoutes);
 
