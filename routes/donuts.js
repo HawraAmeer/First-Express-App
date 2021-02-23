@@ -1,4 +1,5 @@
 const express = require("express");
+const passport = require("passport");
 
 const {
   donutList,
@@ -24,8 +25,17 @@ router.get("/", donutList);
 
 router.get("/:donutId", donutDetail);
 
-router.put("/:donutId", upload.single("image"), updateDonut);
+router.put(
+  "/:donutId",
+  passport.authenticate("jwt", { session: false }),
+  upload.single("image"),
+  updateDonut
+);
 
-router.delete("/:donutId", deleteDonut);
+router.delete(
+  "/:donutId",
+  passport.authenticate("jwt", { session: false }),
+  deleteDonut
+);
 
 module.exports = router;

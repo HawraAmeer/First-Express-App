@@ -46,4 +46,7 @@ db.Sequelize = Sequelize;
 db.Shop.hasMany(db.Donut, { foreignKey: "shopId", as: "donuts" });
 db.Donut.belongsTo(db.Shop, { foreignKey: "shopId", as: "shop" });
 
+db.User.hasOne(db.Shop, { as: "shop", foreignKey: "userId" });
+db.Shop.belongsTo(db.User, { as: "user" });
+
 module.exports = db;

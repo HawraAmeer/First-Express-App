@@ -27,9 +27,17 @@ exports.shopList = async (req, res, next) => {
 
 exports.createShop = async (req, res, next) => {
   try {
+    const foundShop = await Shop.findOne({ where: { userId: req.user.id } });
+    if (foundShop) {
+      const err = new Error("You already have a shop");
+      err.status = 400;
+      next(err);
+    }
+
     if (req.file) {
       req.body.image = `http://${req.get("host")}/media/${req.file.filename}`;
     }
+    req.body.userId = req.user.id;
     const newShop = await Shop.create(req.body);
     res.status(201).json(newShop);
   } catch (error) {
@@ -64,6 +72,18 @@ exports.deleteShop = async (req, res, next) => {
 
 exports.createDonut = async (req, res, next) => {
   try {
+    const foundShop = await Shop.findByPk(req.shop.id);
+    if (!foundShop) {
+      const err = new Error("Create a shop first!");
+      err.status = 401;
+      next(err);
+    }
+    if (foundShop.userId !== req.user.id) {
+      const err = new Error("You are not the owner, you can't add products.");
+      err.status = 401;
+      next(err);
+    }
+
     req.body.shopId = req.shop.id;
     if (req.file) {
       req.body.image = `http://${req.get("host")}/media/${req.file.filename}`;

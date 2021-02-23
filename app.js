@@ -6,7 +6,7 @@ const userRoutes = require("./routes/users");
 const path = require("path");
 const cors = require("cors");
 const passport = require("passport");
-const { localStrategy } = require("./middlewares/passport");
+const { localStrategy, jwtStrategy } = require("./middlewares/passport");
 
 const app = express();
 
@@ -15,6 +15,7 @@ app.use(cors());
 
 app.use(passport.initialize());
 passport.use(localStrategy);
+passport.use(jwtStrategy);
 
 app.use("/media", express.static(path.join(__dirname, "media")));
 

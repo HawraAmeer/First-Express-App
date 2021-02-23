@@ -31,6 +31,20 @@ exports.donutDetail = async (req, res, next) => {
 
 exports.updateDonut = async (req, res, next) => {
   try {
+    const foundShop = await Shop.findByPk(req.donut.shopId);
+    if (!foundShop) {
+      const err = new Error("Create a shop first!");
+      err.status = 401;
+      next(err);
+    }
+    if (foundShop.userId !== req.user.id) {
+      const err = new Error(
+        "You are not the owner, you can't update this shop products."
+      );
+      err.status = 401;
+      next(err);
+    }
+
     if (req.file) {
       req.body.image = `http://${req.get("host")}/media/${req.file.filename}`;
     }
@@ -43,6 +57,20 @@ exports.updateDonut = async (req, res, next) => {
 
 exports.deleteDonut = async (req, res, next) => {
   try {
+    const foundShop = await Shop.findByPk(req.donut.shopId);
+    if (!foundShop) {
+      const err = new Error("Create a shop first!");
+      err.status = 401;
+      next(err);
+    }
+    if (foundShop.userId !== req.user.id) {
+      const err = new Error(
+        "You are not the owner, you can't delete this shop products."
+      );
+      err.status = 401;
+      next(err);
+    }
+
     await req.donut.destroy();
     res.status(204).end();
   } catch (error) {

@@ -15,7 +15,7 @@ exports.signup = async (req, res, next) => {
       email: newUser.email,
       firstName: newUser.firstName,
       lastName: newUser.lastName,
-      exp: Date.now() + 5000,
+      exp: Date.now() + 900000,
     };
     const token = jwt.sign(JSON.stringify(payload), "asupersecretkey");
     res.json({ token });
@@ -32,7 +32,7 @@ exports.signin = (req, res) => {
     email: user.email,
     firstName: user.firstName,
     lastName: user.lastName,
-    exp: Date.now() + 5000,
+    exp: Date.now() + 900000,
   };
   const token = jwt.sign(JSON.stringify(payload), "asupersecretkey");
   res.json({ token });
