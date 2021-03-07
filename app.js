@@ -3,6 +3,7 @@ const db = require("./db/models");
 const donutRoutes = require("./routes/donuts");
 const shopRoutes = require("./routes/shops");
 const userRoutes = require("./routes/users");
+const orderRoutes = require("./routes/orders");
 const path = require("path");
 const cors = require("cors");
 const passport = require("passport");
@@ -20,6 +21,7 @@ passport.use(jwtStrategy);
 app.use("/media", express.static(path.join(__dirname, "media")));
 
 app.use(userRoutes);
+app.use(orderRoutes);
 app.use("/donuts", donutRoutes);
 app.use("/shops", shopRoutes);
 
